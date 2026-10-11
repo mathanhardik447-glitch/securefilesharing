@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Share - Full-Screen Secure File Sharing System</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="theme-app">
+
+  <!-- Main Website Shell (Full Desktop Canvas) -->
+  <div class="web-application">
+    
+    <!-- Top Global Header (Displayed when authenticated, full viewport width) -->
+    <header class="website-header" id="websiteHeader">
+      <div class="header-inner">
+        
+        <!-- Left: Brand Logo & Title -->
+        <div class="brand-group" id="headerBrandLogo" title="Secure File Sharing Console">
+          <div class="brand-logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+              <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.1-1.4.3-2"/>
+              <path d="M9 10a3 3 0 0 1 6 0c0 4-1 6.5-1.5 8.5"/>
+              <path d="M12 14c0 3-.5 5-1.5 6.5"/>
+              <path d="M15 12c0 2-.2 4-.6 6"/>
+              <path d="M18.5 9c.3 1 .5 2 .5 3 0 2.5-1 4.5-2 6.5"/>
+            </svg>
+          </div>
+          <div class="brand-text-wrap">
+            <span class="brand-name">Secure Share</span>
+            <span class="version-tag">v2.5 // Zero-Trust Node</span>
+          </div>
+        </div>
+
+        <!-- Center: EXACTLY FOUR PRIMARY NAVIGATION TABS -->
+        <nav class="header-nav-tabs" id="headerNavTabs">
+          
+          <!-- 1. Send Files -->
+          <button type="button" class="nav-tab-btn" data-target="send" id="tabSend" title="Dispatch files via recipient email">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            <span>Send Files</span>
+          </button>
+
+          <!-- 2. Receive Files -->
+          <button type="button" class="nav-tab-btn" data-target="receive" id="tabReceive" title="Inspect incoming transfer requests">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="8 17 12 21 16 17"/>
+              <line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>
+            </svg>
+            <span>Receive Files</span>
+            <span class="tab-badge-counter hidden" id="incomingCounterBadge">0</span>
+          </button>
+
+          <!-- 3. Request (Replaces File Management) -->
+          <button type="button" class="nav-tab-btn" data-target="request" id="tabRequest" title="Manage sent and received requests">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Request</span>
+          </button>
+
+          <!-- 4. Logout (Replaces System Configuration) -->
+          <button type="button" class="nav-tab-btn nav-logout-tab" id="tabLogout" title="Disconnect console session">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Logout</span>
+          </button>
+
+        </nav>
+
+        <!-- Right: Authenticated User Controls -->
+        <div class="header-actions" id="headerAuthControls">
+          <!-- Current User Identity Pill -->
+          <div class="user-header-pill" id="headerUserPill" title="Authenticated Session Node">
+            <div class="user-header-avatar">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="user-header-email" id="headerUserEmail">user@secureshare.io</span>
+            <span class="badge-secured-node">SECURED NODE</span>
+          </div>
+
+          <!-- Quick User Switcher Button (Alice / Bob / Mathan) -->
+          <button id="quickSwitchAccountBtn" class="pill-btn secondary-pill" title="Switch between registered test nodes">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Switch User</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Main Viewport (Displays only the current active page, full screen) -->
+    <main class="web-main-container">
+      <div class="web-viewport">
+
+        <!-- ======================================================== -->
+        <!-- PAGE 1: FULL-SCREEN DESKTOP LOGIN PAGE                   -->
+        <!-- ======================================================== -->
+        <section id="pageLogin" class="page-view active full-screen-auth-view">
+          <div class="auth-desktop-hero-layout">
+            
+            <!-- Left Panel: Enterprise Security Presentation -->
+            <div class="auth-hero-branding-panel">
+              <div class="hero-brand-top">
+                <div class="hero-brand-badge">
+                  <span class="hero-pulse-dot"></span>
+                  <span>ZERO-TRUST CONSOLE v2.5</span>
+                </div>
+                <h1 class="hero-headline">Secure File Sharing System</h1>
+                <p class="hero-description">
+                  Enterprise-grade peer-to-peer file transfer with cryptographic recipient authentication, explicit acceptance gating, and real-time email notification governance.
+                </p>
+              </div>
+
+              <!-- Feature Highlights with checkmarks -->
+              <div class="hero-features-list">
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong>Explicit Recipient Governance:</strong>
+                    <span>Files remain strictly locked and private until the recipient authenticates and explicitly clicks Accept.</span>
+                  </div>
+                </div>
+
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong>Zero Server Knowledge Storage:</strong>
+                    <span>Uploaded files are vaulted in private storage outside public web roots with SHA-256 payload integrity checksums.</span>
+                  </div>
+                </div>
+
+                <div class="hero-feature-item">
+                  <div class="hero-feature-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <strong>Real-Time Notification Delivery:</strong>
+                    <span>Recipients receive instant email alerts with secure links to review, accept, or reject incoming transfer requests.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="hero-footer-status">
+                <span class="node-status-text">● SECURE CLUSTER NODE: ACTIVE (SQLite WAL Engine)</span>
+              </div>
+            </div>
+
+            <!-- Right Panel: Pure White Authentication Card -->
+            <div class="auth-form-card-container">
+              <div class="auth-card">
+                
+                <!-- Blue Fingerprint Icon Badge -->
+                <div class="auth-icon-badge">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+                    <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.1-1.4.3-2"/>
+                    <path d="M9 10a3 3 0 0 1 6 0c0 4-1 6.5-1.5 8.5"/>
+                    <path d="M12 14c0 3-.5 5-1.5 6.5"/>
+                    <path d="M15 12c0 2-.2 4-.6 6"/>
+                    <path d="M18.5 9c.3 1 .5 2 .5 3 0 2.5-1 4.5-2 6.5"/>
+                  </svg>
+                </div>
+
+                <!-- Page Title & Subtitle -->
+                <h2 class="auth-title">Secure Share</h2>
+                <div class="auth-subtitle">v2.5 // Desktop Console</div>
+                <p class="auth-desc">Zero-Trust client-side encryption and audited recipient sharing.</p>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" autocomplete="on">
+                  
+                  <!-- Email Address -->
+                  <div class="form-group-vertical">
+                    <div class="input-group">
+                      <div class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect width="20" height="16" x="2" y="4" rx="2"/>
+                          <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                        </svg>
+                      </div>
+                      <input type="email" id="loginEmail" placeholder="Email Address" required autocomplete="email">
+                    </div>
+                  </div>
+
+                  <!-- Password with Toggle -->
+                  <div class="form-group-vertical">
+                    <div class="input-group">
+                      <div class="input-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                      </div>
+                      <input type="password" id="loginPassword" placeholder="Secret Passphrase" required autocomplete="current-password">
+                      <button type="button" class="password-toggle-btn" id="toggleLoginPasswordBtn" tabindex="-1" title="Show or hide passphrase">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                          <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="field-hint">Minimum 6 characters for cloud key rings</div>
+                  </div>
+
+                  <!-- Error & Alert Box -->
+                  <div id="loginAlert" class="alert-box error hidden"></div>
+
+                  <!-- Authenticate Console Button -->
+                  <button type="submit" id="loginSubmitBtn" class="primary-action-btn authenticate-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                      <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    <span>Authenticate Console</span>
+                  </button>
+
+                  <!-- Registration Link -->
+                  <div class="auth-switch-link">
+                    <a href="#register" id="goToRegisterLink">Need cloud storage? Register Account</a>
+                  </div>
+                </form>
+
+                <!-- Auditor Quick Sandbox Section -->
+                <div class="sandbox-section">
+                  <div class="sandbox-divider">
+                    <span>AUDITOR QUICK SANDBOX</span>
+                  </div>
+                  
+                  <div class="sandbox-buttons">
+                    <button type="button" class="sandbox-btn cloud-demo" id="cloudDemoBtn" title="Test immediately as Alice Walker">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+                        <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.1-1.4.3-2"/>
+                        <path d="M9 10a3 3 0 0 1 6 0c0 4-1 6.5-1.5 8.5"/>
+                      </svg>
+                      <span>Cloud Demo (Alice)</span>
+                    </button>
+
+                    <button type="button" class="sandbox-btn offline-demo" id="offlineDemoBtn" title="Test immediately as Bob Martinez">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                        <path d="m9 12 2 2 4-4"/>
+                      </svg>
+                      <span>Offline Demo (Bob)</span>
+                    </button>
+                  </div>
+
+                  <p class="sandbox-note">
+                    Cloud Demo logs in as Alice (sender), while Offline Demo logs in as Bob (receiver) to test two-way file sharing.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 1B: FULL-SCREEN REGISTRATION PAGE                    -->
+        <!-- ======================================================== -->
+        <section id="pageRegister" class="page-view full-screen-auth-view">
+          <div class="auth-card standalone-card">
+            
+            <div class="auth-icon-badge">
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <line x1="19" y1="8" x2="19" y2="14"/>
+                <line x1="22" y1="11" x2="16" y2="11"/>
+              </svg>
+            </div>
+
+            <h2 class="auth-title">Register Account</h2>
+            <div class="auth-subtitle">Secure Share // Cloud Storage</div>
+            <p class="auth-desc">Provision your zero-trust cryptographic credentials.</p>
+
+            <form id="registerForm" class="auth-form" autocomplete="on">
+              
+              <!-- Full Name -->
+              <div class="form-group-vertical">
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                      <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                  </div>
+                  <input type="text" id="regFullName" placeholder="Full Name" required autocomplete="name">
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group-vertical">
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="20" height="16" x="2" y="4" rx="2"/>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                  </div>
+                  <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="email">
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="form-group-vertical">
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                  <input type="password" id="regPassword" placeholder="Secret Passphrase (Min 6 chars)" required autocomplete="new-password">
+                  <button type="button" class="password-toggle-btn" id="toggleRegPasswordBtn" tabindex="-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="form-group-vertical">
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                  <input type="password" id="regConfirmPassword" placeholder="Confirm Secret Passphrase" required autocomplete="new-password">
+                </div>
+              </div>
+
+              <div id="registerAlert" class="alert-box error hidden"></div>
+
+              <button type="submit" id="registerSubmitBtn" class="primary-action-btn authenticate-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+                  <path d="m9 12 2 2 4-4"/>
+                </svg>
+                <span>Create Encrypted Identity</span>
+              </button>
+
+              <div class="auth-switch-link">
+                <a href="#login" id="goToLoginLink">Already have cloud credentials? Authenticate Console</a>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 2: FULL-WIDTH DESKTOP DASHBOARD                      -->
+        <!-- ======================================================== -->
+        <section id="pageDashboard" class="page-view app-page-wrapper">
+          
+          <!-- Dashboard Node Profile Card -->
+          <div class="dashboard-user-card">
+            <div class="user-avatar-squircle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="user-info-text">
+              <div class="user-email-row">
+                <h2 class="user-primary-email" id="dashboardUserEmail">user@secureshare.io</h2>
+                <span class="badge-secured-node">SECURED NODE</span>
+              </div>
+              <div class="user-uid-row">
+                <span class="user-uid-label">NODE UID:</span>
+                <span class="user-uid-code" id="dashboardUserUid">node_session_active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PRIMARY 4 ACTION CARDS (Desktop Grid) -->
+          <div class="dashboard-options-grid">
+            
+            <!-- Option 1: Send Files -->
+            <div class="dashboard-option-card send-option" id="btnNavToSend">
+              <div class="option-icon-wrap send-bg">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="22" y1="2" x2="11" y2="13"/>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <span class="option-badge send-badge">OUTGOING DISPATCH</span>
+                <h3 class="option-title">Send Files</h3>
+                <p class="option-desc">Select one or multiple files, enter the recipient's registered email address, add an optional message, and dispatch a transfer request.</p>
+              </div>
+              <div class="option-action-btn">
+                <span>Open Send Files</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+
+            <!-- Option 2: Receive Files -->
+            <div class="dashboard-option-card receive-option" id="btnNavToReceive">
+              <div class="option-icon-wrap receive-bg">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="8 17 12 21 16 17"/>
+                  <line x1="12" y1="12" x2="12" y2="21"/>
+                  <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <span class="option-badge receive-badge" id="badgePendingReviews">INCOMING REQUESTS</span>
+                <h3 class="option-title">Receive Files</h3>
+                <p class="option-desc">Inspect transfer requests sent to your email. Explicitly Accept to unlock authorized file downloads or Reject to deny access.</p>
+              </div>
+              <div class="option-action-btn">
+                <span>Open Receive Files</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+
+            <!-- Option 3: Request (Sent and Received Requests) -->
+            <div class="dashboard-option-card requests-option" id="btnNavToRequest">
+              <div class="option-icon-wrap requests-bg">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <span class="option-badge requests-badge">STATUS & AUDIT</span>
+                <h3 class="option-title">Request Tab</h3>
+                <p class="option-desc">Comprehensive governance over your Sent and Received requests. Filter by Pending, Accepted, or Rejected and cancel pending requests.</p>
+              </div>
+              <div class="option-action-btn">
+                <span>Manage Requests</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+
+            <!-- Option 4: Logout -->
+            <div class="dashboard-option-card logout-option" id="btnNavToLogout">
+              <div class="option-icon-wrap logout-bg">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </div>
+              <div class="option-content">
+                <span class="option-badge logout-badge">SESSION SECURITY</span>
+                <h3 class="option-title">Logout</h3>
+                <p class="option-desc">Safely terminate your authenticated server session, revoke cryptographic tokens, and return to the secure login console.</p>
+              </div>
+              <div class="option-action-btn danger">
+                <span>Disconnect Console</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Activity Telemetry Box -->
+          <div class="card-section-box">
+            <div class="section-box-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>OPERATING NODE TELEMETRY & LIVE REQUEST METRICS</span>
+            </div>
+            <div class="snapshot-stats">
+              <div class="stat-pill">
+                <span class="stat-label">Pending Incoming Reviews</span>
+                <span class="stat-value" id="statPendingReviews">0</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Accepted Received Transfers</span>
+                <span class="stat-value" id="statAcceptedCount">0</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">Total Sent Requests</span>
+                <span class="stat-value" id="statSentRequests">0</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-label">SMTP Notification Service</span>
+                <span class="stat-value color-blue" id="statEmailServiceStatus">Diagnostic Mode</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Protection Activated Banner (Green Banner) -->
+          <div class="green-protection-banner">
+            <div class="protection-title">Active Protection Activated</div>
+            <div class="protection-text">
+              Zero-Server-Knowledge Architecture: Files are private and encrypted. Direct downloads are strictly locked until the recipient explicitly logs in and clicks Accept.
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 3: FULL-SCREEN SEND FILES (EMAIL-BASED SHARING)      -->
+        <!-- ======================================================== -->
+        <section id="pageSend" class="page-view app-page-wrapper">
+          
+          <div class="page-nav-bar">
+            <button type="button" class="back-to-dashboard-btn" id="btnBackFromSend">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              <span>Back to Dashboard</span>
+            </button>
+            <span class="nav-breadcrumbs">Dashboard / <strong>Send Files</strong></span>
+          </div>
+
+          <div class="dedicated-page-card">
+            <div class="page-card-header">
+              <div class="page-card-icon send-bg">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </div>
+              <div>
+                <h2 class="page-card-title">Send Files (Email-Based Transfer)</h2>
+                <p class="page-card-subtitle">Select one or multiple files, enter recipient's registered email, add an optional note, and dispatch a transfer request.</p>
+              </div>
+            </div>
+
+            <!-- Send Request Form -->
+            <form id="sendFilesForm" class="dedicated-form">
+              
+              <!-- 1. Select Multiple Files Dropzone -->
+              <div class="form-field-block">
+                <div class="field-label-row">
+                  <label class="field-label">1. Select Files to Transfer</label>
+                  <span class="field-counter-badge" id="selectedFilesSummaryBadge">0 Files Selected</span>
+                </div>
+
+                <div class="file-dropzone" id="fileDropzone">
+                  <input type="file" id="fileInput" class="file-hidden-input" multiple>
+                  
+                  <div class="dropzone-inner" id="dropzonePlaceholder">
+                    <div class="dropzone-icon">
+                      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    </div>
+                    <div class="dropzone-text">Drag and drop files here, or click Browse Files</div>
+                    <div class="dropzone-hint">Support for single or multiple files (Documents, Archives, Images, PDFs — Max 50MB per file)</div>
+                    <button type="button" class="select-file-button" id="triggerFilePickerBtn">Browse Files</button>
+                  </div>
+
+                  <!-- Selected Files List Container -->
+                  <div class="multi-file-list hidden" id="multiFileList">
+                    <!-- Dynamically populated selected files -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Recipient Registered Email Address -->
+              <div class="form-field-block">
+                <label class="field-label" for="receiverEmailInput">2. Recipient's Registered Email Address</label>
+                <div class="input-group">
+                  <div class="input-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="20" height="16" x="2" y="4" rx="2"/>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                    </svg>
+                  </div>
+                  <input type="email" id="receiverEmailInput" placeholder="Enter recipient's registered email (e.g. bob@secureshare.io)" required autocomplete="email">
+                </div>
+                <!-- Real-Time Recipient Verification Pill -->
+                <div id="recipientCheckBadge" class="verification-pill hidden"></div>
+              </div>
+
+              <!-- 3. Optional Message Field -->
+              <div class="form-field-block">
+                <label class="field-label" for="requestMessageInput">3. Message for Recipient (Optional)</label>
+                <textarea id="requestMessageInput" class="form-textarea" placeholder="Add an optional message or transfer instructions for the recipient..."></textarea>
+              </div>
+
+              <!-- 4. Expiration Option -->
+              <div class="form-field-block">
+                <label class="field-label" for="requestExpirySelect">4. Request Expiration</label>
+                <select id="requestExpirySelect" class="form-select">
+                  <option value="1">1 Hour</option>
+                  <option value="24" selected>24 Hours (Default)</option>
+                  <option value="168">7 Days</option>
+                  <option value="0">Never Expire</option>
+                </select>
+              </div>
+
+              <!-- Upload Progress Indicator -->
+              <div class="upload-progress-wrapper hidden" id="uploadProgressWrapper">
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" id="uploadProgressBar" style="width: 0%"></div>
+                </div>
+                <div class="progress-label" id="uploadProgressText">Encrypting and uploading payload... 0%</div>
+              </div>
+
+              <!-- Alert Box -->
+              <div id="sendAlert" class="alert-box error hidden"></div>
+
+              <!-- Form Action Buttons -->
+              <div class="form-actions-row">
+                <button type="button" class="secondary-btn" id="cancelSendBtn">Cancel</button>
+                <button type="submit" class="primary-action-btn send-btn-submit" id="sendRequestSubmitBtn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <span>Send Request</span>
+                </button>
+              </div>
+
+            </form>
+
+            <!-- Success Card (Shown after request is dispatched) -->
+            <div class="share-success-card hidden" id="sendSuccessCard">
+              <div class="share-success-header">
+                <div class="success-icon-badge">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <h3 class="share-success-title">File Request Dispatched Successfully</h3>
+                  <p class="share-success-desc">The transfer request has been created in Pending status. The recipient must accept before files can be downloaded.</p>
+                </div>
+              </div>
+
+              <div class="request-summary-box">
+                <div class="summary-row">
+                  <span class="summary-label">Recipient:</span>
+                  <strong class="summary-val" id="successRecipientEmail">-</strong>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Status:</span>
+                  <span class="status-badge pending">PENDING RECIPIENT ACCEPTANCE</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Files Dispatched:</span>
+                  <span class="summary-val" id="successFileCount">-</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Total Size:</span>
+                  <span class="summary-val" id="successTotalSize">-</span>
+                </div>
+                <div class="summary-row">
+                  <span class="summary-label">Email Notification:</span>
+                  <span class="summary-val color-blue" id="successEmailNote">Delivered / Simulated Diagnostic</span>
+                </div>
+              </div>
+
+              <div class="share-card-footer">
+                <button type="button" class="secondary-btn" id="sendAnotherRequestBtn">Send Another Request</button>
+                <button type="button" class="primary-action-btn" id="viewInRequestTabBtn">Track in Request Tab &rarr;</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 4: FULL-SCREEN RECEIVE FILES (ACCEPT OR REJECT)      -->
+        <!-- ======================================================== -->
+        <section id="pageReceive" class="page-view app-page-wrapper">
+          
+          <div class="page-nav-bar">
+            <button type="button" class="back-to-dashboard-btn" id="btnBackFromReceive">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              <span>Back to Dashboard</span>
+            </button>
+            <span class="nav-breadcrumbs">Dashboard / <strong>Receive Files</strong></span>
+          </div>
+
+          <div class="dedicated-page-card">
+            <div class="page-card-header">
+              <div class="page-card-icon receive-bg">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+              </div>
+              <div class="header-content-flex">
+                <div>
+                  <h2 class="page-card-title">Incoming File Requests</h2>
+                  <p class="page-card-subtitle">Review file requests addressed to your account. Accept to unlock authorized file downloads or Reject to deny transfer access.</p>
+                </div>
+                <button type="button" class="refresh-pill-btn" id="refreshReceiveBtn" title="Refresh incoming transfer list">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                  <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- List of Incoming Requests -->
+            <div id="incomingRequestsStack" class="incoming-requests-stack">
+              <!-- Dynamically populated via app.js -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- PAGE 5: FULL-SCREEN REQUEST TAB (SENT & RECEIVED)         -->
+        <!-- ======================================================== -->
+        <section id="pageRequest" class="page-view app-page-wrapper">
+          
+          <div class="page-nav-bar">
+            <button type="button" class="back-to-dashboard-btn" id="btnBackFromRequest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+              <span>Back to Dashboard</span>
+            </button>
+            <span class="nav-breadcrumbs">Dashboard / <strong>Request Management</strong></span>
+          </div>
+
+          <div class="dedicated-page-card">
+            
+            <div class="page-card-header">
+              <div class="page-card-icon requests-bg">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              </div>
+              <div class="header-content-flex">
+                <div>
+                  <h2 class="page-card-title">Request Management</h2>
+                  <p class="page-card-subtitle">Complete overview and status tracking of all requests sent and received by your node.</p>
+                </div>
+                <button type="button" class="refresh-pill-btn" id="refreshRequestTabBtn" title="Refresh requests">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                  <span>Refresh</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sub-Tabs: Sent Requests vs Received Requests -->
+            <div class="request-subtabs-bar">
+              <div class="subtabs-group">
+                <button type="button" class="subtab-btn active" id="subtabSent" data-subtab="sent">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <span>Sent Requests</span>
+                  <span class="subtab-count-badge" id="sentCountBadge">0</span>
+                </button>
+                <button type="button" class="subtab-btn" id="subtabReceived" data-subtab="received">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+                  <span>Received Requests</span>
+                  <span class="subtab-count-badge" id="receivedCountBadge">0</span>
+                </button>
+              </div>
+
+              <!-- Status Filters -->
+              <div class="filters-pills-row" id="statusFiltersRow">
+                <button type="button" class="filter-pill active" data-filter="ALL">All</button>
+                <button type="button" class="filter-pill" data-filter="PENDING">Pending</button>
+                <button type="button" class="filter-pill" data-filter="ACCEPTED">Accepted</button>
+                <button type="button" class="filter-pill" data-filter="REJECTED">Rejected</button>
+                <button type="button" class="filter-pill" data-filter="CANCELLED">Cancelled</button>
+              </div>
+            </div>
+
+            <!-- Section A: Sent Requests Stack -->
+            <div id="sentRequestsSection" class="requests-view-panel active">
+              <div id="sentRequestsList" class="requests-cards-stack">
+                <!-- Dynamically populated via app.js -->
+              </div>
+            </div>
+
+            <!-- Section B: Received Requests Stack -->
+            <div id="receivedRequestsSection" class="requests-view-panel">
+              <div id="receivedRequestsList" class="requests-cards-stack">
+                <!-- Dynamically populated via app.js -->
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </div><!-- /web-viewport -->
+    </main>
+
+  </div><!-- /web-application -->
+
+  <!-- ======================================================== -->
+  <!-- MODAL: VIEW REQUEST DETAILS                               -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay hidden" id="requestDetailsModal">
+    <div class="modal-card wide-modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon requests-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div>
+            <h3 class="modal-heading">Request Details</h3>
+            <p class="modal-subheading" id="modalRequestId">req_00000</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeRequestDetailsModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-content-body" id="requestDetailsModalBody">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: CONFIRM REJECT ACTION                             -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay hidden" id="confirmRejectModal">
+    <div class="modal-card small-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon danger-icon-bg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+          <div>
+            <h3 class="modal-heading">Reject File Request?</h3>
+            <p class="modal-subheading">Confirm transfer refusal</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeRejectModalBtn">&times;</button>
+      </div>
+      <p class="modal-confirm-desc">
+        Are you sure you want to reject this incoming file request? Access to the files will be permanently denied, and downloads will be blocked.
+      </p>
+      <div class="modal-actions-row">
+        <button type="button" class="secondary-btn" id="cancelRejectBtn">Cancel</button>
+        <button type="button" class="danger-btn" id="confirmRejectSubmitBtn">Confirm Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: QUICK ACCOUNT SWITCHER                            -->
+  <!-- ======================================================== -->
+  <div class="modal-overlay hidden" id="switchUserModal">
+    <div class="modal-card small-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon user-icon-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <h3 class="modal-heading">Quick Switch Node</h3>
+            <p class="modal-subheading">Instantly test two-way file sharing</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeSwitchUserModalBtn">&times;</button>
+      </div>
+      <div class="switch-user-list">
+        <button type="button" class="switch-user-item" data-email="alice@secureshare.io">
+          <div class="user-item-avatar">A</div>
+          <div class="user-item-info">
+            <div class="user-item-name">Alice Walker</div>
+            <div class="user-item-email">alice@secureshare.io</div>
+          </div>
+          <span class="user-item-status">Switch &rarr;</span>
+        </button>
+        <button type="button" class="switch-user-item" data-email="bob@secureshare.io">
+          <div class="user-item-avatar">B</div>
+          <div class="user-item-info">
+            <div class="user-item-name">Bob Martinez</div>
+            <div class="user-item-email">bob@secureshare.io</div>
+          </div>
+          <span class="user-item-status">Switch &rarr;</span>
+        </button>
+        <button type="button" class="switch-user-item" data-email="mathanhardik68@gmail.com">
+          <div class="user-item-avatar">M</div>
+          <div class="user-item-info">
+            <div class="user-item-name">Mathan Hardik (Primary Node)</div>
+            <div class="user-item-email">mathanhardik68@gmail.com</div>
+          </div>
+          <span class="user-item-status">Switch &rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
